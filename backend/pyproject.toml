@@ -3,10 +3,16 @@ name = "lbl"
 version = "0.0.0"
 description = "Little by Little backend: API and planning engine"
 requires-python = ">=3.12,<3.13"
-dependencies = []
+dependencies = [
+    "fastapi>=0.165.0",
+    "pydantic-settings>=2.16.3",
+    "structlog>=26.1.0",
+    "uvicorn[standard]>=0.54.0",
+]
 
 [dependency-groups]
 dev = [
+  "httpx>=0.29.0",
   "mypy>=1.13",
   "pytest>=8.3",
   "ruff>=0.8",

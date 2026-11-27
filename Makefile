@@ -4,7 +4,7 @@
 
 help:
 	@echo "make setup        install dependencies and enable git hooks"
-	@echo "make dev          run Postgres, API and Expo (stub until M0-04 to M0-06)"
+	@echo "make dev          run the API on :8000 (database and app join in M0-05, M0-06)"
 	@echo "make check        lint, typecheck and tests (run before every commit)"
 	@echo "make test-hooks   test the git hooks and PR text check"
 	@echo "make test-engine  engine unit and property tests"
@@ -19,7 +19,7 @@ setup:
 	cd backend && uv sync
 
 dev:
-	@echo "make dev: nothing to run yet. Added by M0-04 (API), M0-05 (database) and M0-06 (app)."
+	cd backend && uv run uvicorn lbl.main:app --reload --port 8000
 
 lint:
 	cd backend && uv run ruff check . && uv run ruff format --check .
