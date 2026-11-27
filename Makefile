@@ -1,11 +1,12 @@
 # Cross-stack commands. Stubs print a note until the stack they need exists.
 .DEFAULT_GOAL := help
-.PHONY: help setup dev check lint typecheck test test-engine gen-api migrate seed
+.PHONY: help setup dev check lint typecheck test test-hooks test-engine gen-api migrate seed
 
 help:
 	@echo "make setup        install dependencies and enable git hooks"
 	@echo "make dev          run Postgres, API and Expo (stub until M0-04 to M0-06)"
 	@echo "make check        lint, typecheck and tests (run before every commit)"
+	@echo "make test-hooks   test the git hooks and PR text check"
 	@echo "make test-engine  engine unit and property tests"
 	@echo "make gen-api      regenerate the typed API client (stub until M0-08)"
 	@echo "make migrate      apply database migrations (stub until M0-05)"
@@ -28,9 +29,12 @@ typecheck:
 	cd backend && uv run mypy
 	pnpm run typecheck
 
-test:
+test: test-hooks
 	cd backend && uv run pytest
 	pnpm run test
+
+test-hooks:
+	scripts/test-git-hygiene.sh
 
 check: lint typecheck test
 
