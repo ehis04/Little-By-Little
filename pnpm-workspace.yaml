@@ -1,0 +1,10 @@
+nodeLinker: hoisted
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Dependency install scripts are off by default. @sentry/cli only downloads an upload binary
+# that EAS builds fetch themselves, so it stays disabled.
+allowBuilds:
+  "@sentry/cli": false
+  "@parcel/watcher": false
