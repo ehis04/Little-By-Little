@@ -20,7 +20,7 @@ class Settings(BaseSettings):
 
     app_env: AppEnv = AppEnv.LOCAL
     log_level: str = "INFO"
-    # Used from M0-05 onwards. Never logged.
+    # Postgres connection URL (docs/03 section 7). Never logged.
     database_url: str | None = None
 
     @property

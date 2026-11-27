@@ -1,15 +1,17 @@
 # Cross-stack commands. Stubs print a note until the stack they need exists.
 .DEFAULT_GOAL := help
-.PHONY: help setup dev check lint typecheck test test-hooks test-engine gen-api migrate seed
+.PHONY: help setup dev db-up db-down check lint typecheck test test-hooks test-engine gen-api migrate seed
 
 help:
 	@echo "make setup        install dependencies and enable git hooks"
-	@echo "make dev          run the API on :8000 (database and app join in M0-05, M0-06)"
+	@echo "make db-up        start local Postgres + PostGIS (Docker)"
+	@echo "make db-down      stop local Postgres (data is kept)"
+	@echo "make dev          run the API on :8000 (the app joins in M0-06)"
 	@echo "make check        lint, typecheck and tests (run before every commit)"
 	@echo "make test-hooks   test the git hooks and PR text check"
 	@echo "make test-engine  engine unit and property tests"
 	@echo "make gen-api      regenerate the typed API client (stub until M0-08)"
-	@echo "make migrate      apply database migrations (stub until M0-05)"
+	@echo "make migrate      apply database migrations to DATABASE_URL"
 	@echo "make seed         load curated seed data (stub until M5-01)"
 
 setup:
@@ -17,6 +19,12 @@ setup:
 	corepack enable >/dev/null 2>&1 || true
 	pnpm install
 	cd backend && uv sync
+
+db-up:
+	docker compose up -d --wait db
+
+db-down:
+	docker compose down
 
 dev:
 	cd backend && uv run uvicorn lbl.main:app --reload --port 8000
@@ -45,7 +53,7 @@ gen-api:
 	@echo "make gen-api: nothing to generate yet. Added by M0-08."
 
 migrate:
-	@echo "make migrate: no migrations yet. Added by M0-05."
+	cd backend && uv run alembic upgrade head
 
 seed:
 	@echo "make seed: no seed data yet. Added by M5-01."

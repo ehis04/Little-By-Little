@@ -51,6 +51,20 @@ jobs:
     defaults:
       run:
         working-directory: backend
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: lbl
+          POSTGRES_PASSWORD: lbl
+          POSTGRES_DB: lbl_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lbl -d lbl_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
 
@@ -71,7 +85,9 @@ jobs:
       - name: Mypy
         run: uv run mypy
 
-      - name: Pytest
+      - name: Pytest (unit and integration)
+        env:
+          TEST_DATABASE_URL: postgresql+asyncpg://lbl:lbl@localhost:5432/lbl_test
         run: uv run pytest
 
   app:

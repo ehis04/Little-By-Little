@@ -13,7 +13,7 @@ from lbl.settings import AppEnv, Settings
 
 @pytest.fixture
 def app() -> FastAPI:
-    app = create_app(Settings(app_env=AppEnv.TEST, _env_file=None))  # type: ignore[call-arg]
+    app = create_app(Settings(app_env=AppEnv.TEST, database_url=None, _env_file=None))  # type: ignore[call-arg]
 
     @app.get("/_test/voucher")
     async def voucher() -> None:
