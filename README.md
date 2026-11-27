@@ -16,7 +16,7 @@ make setup    # installs dependencies and enables the git hooks
 make check    # lint, typecheck and tests
 ```
 
-`make dev` runs the stack once the API, database and app tickets land (M0-04 to M0-06).
+`make dev` runs the API. `make dev-app` starts the Expo app (web, iOS simulator, Android emulator).
 
 ## Layout
 

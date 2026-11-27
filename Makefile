@@ -1,12 +1,13 @@
 # Cross-stack commands. Stubs print a note until the stack they need exists.
 .DEFAULT_GOAL := help
-.PHONY: help setup dev db-up db-down check lint typecheck test test-hooks test-engine gen-api migrate seed
+.PHONY: help setup dev dev-app db-up db-down check lint typecheck test test-hooks test-engine gen-api migrate seed
 
 help:
 	@echo "make setup        install dependencies and enable git hooks"
 	@echo "make db-up        start local Postgres + PostGIS (Docker)"
 	@echo "make db-down      stop local Postgres (data is kept)"
-	@echo "make dev          run the API on :8000 (the app joins in M0-06)"
+	@echo "make dev          run the API on :8000"
+	@echo "make dev-app      run the Expo app (press w for web, i for iOS, a for Android)"
 	@echo "make check        lint, typecheck and tests (run before every commit)"
 	@echo "make test-hooks   test the git hooks and PR text check"
 	@echo "make test-engine  engine unit and property tests"
@@ -43,6 +44,9 @@ test: test-hooks
 
 test-hooks:
 	scripts/test-git-hygiene.sh
+
+dev-app:
+	cd apps/app && pnpm exec expo start
 
 check: lint typecheck test
 
