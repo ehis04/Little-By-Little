@@ -1,0 +1,10 @@
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff2 binary
+packages/api-client/schema.d.ts linguist-generated=true
+uv.lock linguist-generated=true
+pnpm-lock.yaml linguist-generated=true
