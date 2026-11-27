@@ -75,3 +75,8 @@ Thumbs.db
 !.vscode/extensions.json
 *.swp
 *.log
+
+# Local documentation bundles and downloaded file metadata
+/lbl-docs-for-library/docs/
+/lbl-repo-starter/
+*:Zone.Identifier
