@@ -111,4 +111,30 @@ export const fontFamily = {
 export const motion = { fast: 120, base: 200, slow: 320 } as const;
 
 /** Hit-area minimums (docs/02 section 7). */
-export const touchTarget = { min: 44, button: 48 } as const;
+export const touchTarget = { min: 44, button: 48, large: 56 } as const;
+
+export const opacity = { disabled: 0.4, pressed: 0.85, hidden: 0 } as const;
+
+/** Shadow levels (docs/02 section 5.3). In dark mode `e1` is flat: cards use the surface tint instead. */
+export const elevation = {
+  e0: {},
+  e1: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
+  },
+  e2: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: -2 },
+    elevation: 6,
+  },
+} as const;
+
+/** Focus ring on web (docs/02 section 7): 2 px primary, offset 2. */
+export const focusRing = { width: 2, offset: 2 } as const;
+
+export const sizes = { iconSmall: 16, icon: 20, iconLarge: 24, iconStroke: 1.75, checkBox: 28, dot: 10 } as const;

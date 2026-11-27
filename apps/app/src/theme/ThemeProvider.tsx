@@ -39,6 +39,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * Re-applies the theme variables to a subtree that renders outside ThemeProvider's view, such as the
+ * content of a Modal (a portal on web).
+ */
+export function ThemeScope({ children }: { children: ReactNode }) {
+  const { colours: palette } = useTheme();
+  const style = useMemo(() => vars(themeVariables(palette)), [palette]);
+  return <View style={[{ flex: 1 }, style]}>{children}</View>;
+}
+
 /** For the few places that need a raw colour (status bar, tab bar tint, icons). Prefer classes. */
 export function useTheme(): Theme {
   const theme = useContext(ThemeContext);
