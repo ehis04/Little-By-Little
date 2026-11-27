@@ -1,0 +1,120 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [Development, main]
+    # edited: re-check the PR title and body when they change (re-runs reuse the old payload).
+    types: [opened, edited, synchronize, reopened]
+  push:
+    branches: [Development, main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  git-hygiene:
+    name: git-hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Hook and PR text self-tests
+        run: scripts/test-git-hygiene.sh
+
+      # Skipped for release PRs (Development -> main): that range also holds commits
+      # that were merged earlier and cannot be rewritten.
+      - name: Branch name and commit messages
+        if: github.event_name == 'pull_request' && github.head_ref != 'Development'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: scripts/check-git-hygiene.sh "origin/${BASE_REF}" "${HEAD_REF}"
+
+      - name: PR title and body
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: scripts/check-pr-text.sh
+
+  backend:
+    name: backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: lbl
+          POSTGRES_PASSWORD: lbl
+          POSTGRES_DB: lbl_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lbl -d lbl_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Ruff lint
+        run: uv run ruff check .
+
+      - name: Ruff format
+        run: uv run ruff format --check .
+
+      - name: Mypy
+        run: uv run mypy
+
+      - name: Pytest (unit and integration)
+        env:
+          TEST_DATABASE_URL: postgresql+asyncpg://lbl:lbl@localhost:5432/lbl_test
+        run: uv run pytest
+
+  app:
+    name: app
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Each workspace defines its own scripts; --if-present keeps this green until M0-06.
+      - name: ESLint
+        run: pnpm run lint
+
+      - name: TypeScript
+        run: pnpm run typecheck
+
+      - name: Jest
+        run: pnpm run test
+
+  # api-drift is added by M0-08 (API client generation).
