@@ -3,6 +3,8 @@ name: CI
 on:
   pull_request:
     branches: [Development, main]
+    # edited: re-check the PR title and body when they change (re-runs reuse the old payload).
+    types: [opened, edited, synchronize, reopened]
   push:
     branches: [Development, main]
 
