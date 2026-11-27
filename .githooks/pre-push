@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Blocks direct pushes to protected branches and enforces branch naming.
+set -euo pipefail
+
+protected='^(main|Development)$'
+name_pattern='^(feat|fix|chore|refactor|perf|test|docs|ci|build|style|hotfix)/(m[0-9]+-[0-9]{2}-)?[a-z0-9]+(-[a-z0-9]+)*$'
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [[ -z "${remote_ref:-}" ]] && continue
+  branch="${remote_ref#refs/heads/}"
+  [[ "$remote_ref" == refs/tags/* ]] && continue
+  if [[ "$branch" =~ $protected ]]; then
+    echo "✖ Direct pushes to '$branch' are not allowed. Open a pull request instead."
+    exit 1
+  fi
+  if ! [[ "$branch" =~ $name_pattern ]]; then
+    echo "✖ Branch name '$branch' does not follow <type>/<ticket-id>-<short-name>, e.g. feat/m1-07-allocation"
+    exit 1
+  fi
+done
+exit 0
